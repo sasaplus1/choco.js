@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>choco.js</title>
+    <link rel="stylesheet" href="../bower_components/mocha/mocha.css">
+  </head>
+  <body>
+    <div id="mocha"></div>
+    <!--[if lte IE 8.0]>
+    <script src="../bower_components/es5-shim/es5-shim.min.js"></script>
+    <![endif]-->
+    <script src="../bower_components/es6-promise/promise.min.js"></script>
+    <script>
+      ES6Promise.polyfill();
+    </script>
+    <script src="../bower_components/power-assert/build/power-assert.js"></script>
+    <script src="../bower_components/eventemitter2/lib/eventemitter2.js"></script>
+    <script src="../bower_components/mocha/mocha.js"></script>
+    <script src="/testem.js"></script>
+    <script>
+      mocha.setup('bdd');
+    </script>
+    <script src="../choco.min.js"></script>
+    <script src="./test.js"></script>
+    <script>
+      mocha.checkLeaks();
+      mocha.run();
+    </script>
+  </body>
+</html>
