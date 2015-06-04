@@ -30,12 +30,75 @@
   var successSuffix = '-success',
       failureSuffix = '-failure';
 
+  var warn = (function(){
+    if (typeof console !== 'undefined') {
+      if (typeof console.warn === 'object') {
+        // IE8, IE9
+        return function() {
+          Function.prototype.apply.call(console.warn, console, arguments);
+        };
+      } else {
+        // modern browsers
+        return console.warn.bind(console);
+      }
+    } else {
+      // old browsers and others
+      return function() {};
+    }
+  }());
+
+  // fallback Object.keys for old browsers.
+  var getKeys = (typeof Object.keys === 'function') ?
+      function(obj) {
+        return Object.keys(obj);
+      } :
+      function(obj) {
+        var keys = [],
+            key;
+
+        if (obj === null || typeof obj !== 'object') {
+          throw new TypeError('obj is not an Object');
+        }
+
+        for (key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            keys.push(key);
+          }
+        }
+
+        return keys;
+      };
+
+  /**
+   * exclude key's value from object.
+   *
+   * @param {Object} target target object.
+   * @param {String} excludeKey exclude key.
+   * @return {Object} excluded object.
+   */
+  function exclude(target, excludeKey) {
+    var keys = getKeys(target),
+        result = {},
+        i, len;
+
+    for (i = 0, len = keys.length; i < len; ++i) {
+      if (keys[i] === excludeKey) {
+        continue;
+      }
+
+      result[keys[i]] = target[keys[i]];
+    }
+
+    return result;
+  }
+
   /**
    * convert to Promise from EventEmitter.
    *
    * @param {EventEmitter} emitter emitter instance.
    * @param {String} event event name.
    * @param {Object} params argument object for emitter.
+   * @return {Promise} promise.
    */
   function choco(emitter, event, params) {
     var paramsType = typeof params;
@@ -60,6 +123,15 @@
       params[ID] = id;
 
       emitter.on(successEvent, onSuccess = function(result) {
+        if (typeof result !== 'object') {
+          warn('result is not an Object', result);
+          return;
+        }
+        if (typeof result[ID] !== 'number') {
+          warn(ID + ' is not a Number', result);
+          return;
+        }
+
         if (result[ID] !== id) {
           return;
         }
@@ -67,12 +139,18 @@
         emitter.removeListener(successEvent, onSuccess);
         emitter.removeListener(failureEvent, onFailure);
 
-        // FIXME
-        delete result[ID];
-
-        resolve(result);
+        resolve(exclude(result, ID));
       });
       emitter.on(failureEvent, onFailure = function(result) {
+        if (typeof result !== 'object') {
+          warn('result is not an Object', result);
+          return;
+        }
+        if (typeof result[ID] !== 'number') {
+          warn(ID + ' is not a Number', result);
+          return;
+        }
+
         if (result[ID] !== id) {
           return;
         }
@@ -80,15 +158,15 @@
         emitter.removeListener(successEvent, onSuccess);
         emitter.removeListener(failureEvent, onFailure);
 
-        // FIXME
-        delete result[ID];
-
-        reject(result);
+        reject(exclude(result, ID));
       });
 
-      emitter.emit(event, params);
+      emitter[choco.trigger](event, params);
     });
   }
+
+  // trigger method name
+  choco.trigger = 'emit';
 
   return choco;
 }));
