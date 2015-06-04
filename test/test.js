@@ -60,7 +60,7 @@
 
           setTimeout(function() {
             emitter.emit('test-success', params);
-          }, 10);
+          }, Math.random() * 10 >> 0);
         });
 
         return Promise.all(values.map(function(value) {
