@@ -117,9 +117,12 @@
         reject(result);
       });
 
-      emitter.emit(event, params);
+      emitter[choco.trigger](event, params);
     });
   }
+
+  // trigger method name
+  choco.trigger = 'emit';
 
   return choco;
 }));
