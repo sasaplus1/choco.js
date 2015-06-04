@@ -23,10 +23,11 @@
 }((this || 0).self || global, function(){
   'use strict';
 
-  var ID = '__choco_id';
+  var ID = '__choco_id',
+      MAX_SAFE_INTEGER = (!Number.MAX_SAFE_INTEGER) ?
+         Math.pow(2, 53) - 1 : Number.MAX_SAFE_INTEGER;
 
-  var isSupportDateNow = !!Date.now,
-      successSuffix = '-success',
+  var successSuffix = '-success',
       failureSuffix = '-failure';
 
   /**
@@ -48,7 +49,7 @@
     }
 
     return new Promise(function(resolve, reject) {
-      var id = (isSupportDateNow) ? Date.now() : +new Date(),
+      var id = Math.floor(Math.random() * MAX_SAFE_INTEGER),
           successEvent = event + successSuffix,
           failureEvent = event + failureSuffix,
           onSuccess, onFailure;
