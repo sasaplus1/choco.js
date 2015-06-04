@@ -53,6 +53,7 @@
    * @param {EventEmitter} emitter emitter instance.
    * @param {String} event event name.
    * @param {Object} params argument object for emitter.
+   * @return {Promise} promise.
    */
   function choco(emitter, event, params) {
     var paramsType = typeof params;
