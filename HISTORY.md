@@ -1,3 +1,9 @@
+# 0.2.0 / 2015-06-05
+
+- warning output
+- can change trigger method name
+- changed to unbang method
+
 # 0.1.1 / 2015-06-04
 
 - fixed duplicate id
