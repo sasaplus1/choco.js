@@ -47,6 +47,51 @@
     }
   }());
 
+  // fallback Object.keys for old browsers.
+  var getKeys = (typeof Object.keys === 'function') ?
+      function(obj) {
+        return Object.keys(obj);
+      } :
+      function(obj) {
+        var keys = [],
+            key;
+
+        if (obj === null || typeof obj !== 'object') {
+          throw new TypeError('obj is not an Object');
+        }
+
+        for (key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            keys.push(key);
+          }
+        }
+
+        return keys;
+      };
+
+  /**
+   * exclude key's value from object.
+   *
+   * @param {Object} target target object.
+   * @param {String} excludeKey exclude key.
+   * @return {Object} excluded object.
+   */
+  function exclude(target, excludeKey) {
+    var keys = getKeys(target),
+        result = {},
+        i, len;
+
+    for (i = 0, len = keys.length; i < len; ++i) {
+      if (keys[i] === excludeKey) {
+        continue;
+      }
+
+      result[keys[i]] = target[keys[i]];
+    }
+
+    return result;
+  }
+
   /**
    * convert to Promise from EventEmitter.
    *
@@ -92,10 +137,7 @@
         emitter.removeListener(successEvent, onSuccess);
         emitter.removeListener(failureEvent, onFailure);
 
-        // FIXME
-        delete result[ID];
-
-        resolve(result);
+        resolve(exclude(result, ID));
       });
       emitter.on(failureEvent, onFailure = function(result) {
         if (typeof result !== 'object') {
@@ -112,10 +154,7 @@
         emitter.removeListener(successEvent, onSuccess);
         emitter.removeListener(failureEvent, onFailure);
 
-        // FIXME
-        delete result[ID];
-
-        reject(result);
+        reject(exclude(result, ID));
       });
 
       emitter[choco.trigger](event, params);
