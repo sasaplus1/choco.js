@@ -37,14 +37,15 @@
         return function() {
           Function.prototype.apply.call(console.warn, console, arguments);
         };
-      } else {
+      } else if (typeof Function.prototype.bind !== 'undefined') {
         // modern browsers
+        // PhantomJS is not has Function.prototype.bind
         return console.warn.bind(console);
       }
-    } else {
-      // old browsers and others
-      return function() {};
     }
+
+    // old browsers and others
+    return function() {};
   }());
 
   // fallback Object.keys for old browsers.
