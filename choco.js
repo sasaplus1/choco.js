@@ -30,6 +30,23 @@
   var successSuffix = '-success',
       failureSuffix = '-failure';
 
+  var warn = (function(){
+    if (typeof console !== 'undefined') {
+      if (typeof console.warn === 'object') {
+        // IE8, IE9
+        return function() {
+          Function.prototype.apply.call(console.warn, console, arguments);
+        };
+      } else {
+        // modern browsers
+        return console.warn.bind(console);
+      }
+    } else {
+      // old browsers and others
+      return function() {};
+    }
+  }());
+
   /**
    * convert to Promise from EventEmitter.
    *
@@ -60,6 +77,13 @@
       params[ID] = id;
 
       emitter.on(successEvent, onSuccess = function(result) {
+        if (typeof result !== 'object') {
+          return warn('result is not an Object');
+        }
+        if (typeof result[ID] !== 'number') {
+          return warn(ID + ' is not a Number');
+        }
+
         if (result[ID] !== id) {
           return;
         }
@@ -73,6 +97,13 @@
         resolve(result);
       });
       emitter.on(failureEvent, onFailure = function(result) {
+        if (typeof result !== 'object') {
+          return warn('result is not an Object');
+        }
+        if (typeof result[ID] !== 'number') {
+          return warn(ID + ' is not a Number');
+        }
+
         if (result[ID] !== id) {
           return;
         }
