@@ -124,10 +124,12 @@
 
       emitter.on(successEvent, onSuccess = function(result) {
         if (typeof result !== 'object') {
-          return warn('result is not an Object');
+          warn('result is not an Object');
+          return;
         }
         if (typeof result[ID] !== 'number') {
-          return warn(ID + ' is not a Number');
+          warn(ID + ' is not a Number');
+          return;
         }
 
         if (result[ID] !== id) {
@@ -141,10 +143,12 @@
       });
       emitter.on(failureEvent, onFailure = function(result) {
         if (typeof result !== 'object') {
-          return warn('result is not an Object');
+          warn('result is not an Object');
+          return;
         }
         if (typeof result[ID] !== 'number') {
-          return warn(ID + ' is not a Number');
+          warn(ID + ' is not a Number');
+          return;
         }
 
         if (result[ID] !== id) {
