@@ -1,3 +1,8 @@
+# 0.2.1 / 2015-06-05
+
+- exports message id key name
+- fixed test for PhantomJS
+
 # 0.2.0 / 2015-06-05
 
 - warning output
