@@ -32,18 +32,18 @@
   var warn = (function(){
     if (typeof console !== 'undefined') {
       if (typeof console.warn === 'object') {
-        // IE8, IE9
+        // for IE8 and IE9.
         return function() {
           Function.prototype.apply.call(console.warn, console, arguments);
         };
       } else if (typeof Function.prototype.bind !== 'undefined') {
-        // modern browsers
-        // PhantomJS is not has Function.prototype.bind
+        // for modern browsers.
+        // PhantomJS is not has `Function.prototype.bind`.
         return console.warn.bind(console);
       }
     }
 
-    // old browsers and others
+    // for old browsers and others.
     return function() {};
   }());
 
