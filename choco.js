@@ -23,8 +23,7 @@
 }((this || 0).self || global, function(){
   'use strict';
 
-  var ID = '__choco_id',
-      MAX_SAFE_INTEGER = (!Number.MAX_SAFE_INTEGER) ?
+  var MAX_SAFE_INTEGER = (!Number.MAX_SAFE_INTEGER) ?
          Math.pow(2, 53) - 1 : Number.MAX_SAFE_INTEGER;
 
   var successSuffix = '-success',
@@ -108,8 +107,8 @@
       throw new TypeError('params must be an Object');
     }
 
-    if (paramsType === 'object' && typeof params[ID] !== 'undefined') {
-      throw new Error(ID + ' is reserved');
+    if (paramsType === 'object' && typeof params[choco.id] !== 'undefined') {
+      throw new Error(choco.id + ' is reserved');
     }
 
     return new Promise(function(resolve, reject) {
@@ -121,52 +120,55 @@
       if (paramsType === 'undefined') {
         params = {};
       }
-      params[ID] = id;
+      params[choco.id] = id;
 
       emitter.on(successEvent, onSuccess = function(result) {
         if (typeof result !== 'object') {
           warn('result is not an Object', result);
           return;
         }
-        if (typeof result[ID] !== 'number') {
-          warn(ID + ' is not a Number', result);
+        if (typeof result[choco.id] !== 'number') {
+          warn(choco.id + ' is not a Number', result);
           return;
         }
 
-        if (result[ID] !== id) {
+        if (result[choco.id] !== id) {
           return;
         }
 
         emitter.removeListener(successEvent, onSuccess);
         emitter.removeListener(failureEvent, onFailure);
 
-        resolve(exclude(result, ID));
+        resolve(exclude(result, choco.id));
       });
       emitter.on(failureEvent, onFailure = function(result) {
         if (typeof result !== 'object') {
           warn('result is not an Object', result);
           return;
         }
-        if (typeof result[ID] !== 'number') {
-          warn(ID + ' is not a Number', result);
+        if (typeof result[choco.id] !== 'number') {
+          warn(choco.id + ' is not a Number', result);
           return;
         }
 
-        if (result[ID] !== id) {
+        if (result[choco.id] !== id) {
           return;
         }
 
         emitter.removeListener(successEvent, onSuccess);
         emitter.removeListener(failureEvent, onFailure);
 
-        reject(exclude(result, ID));
+        reject(exclude(result, choco.id));
       });
 
       emitter[choco.trigger](event, params);
     });
   }
 
-  // trigger method name
+  // message id key name.
+  choco.id = '__choco_id';
+
+  // trigger method name.
   choco.trigger = 'emit';
 
   return choco;
